@@ -11,20 +11,13 @@ A Django-based application designed to match candidate resumes with internship r
 
 ## Prerequisites
 
-Ensure you have Python installed. The following modules are required:
-
-- `django`
-- `pandas`
-- `pdfplumber`
-- `python-docx`
-- `joblib`
-- `openpyxl` (for Excel dataset processing)
+Ensure you have Python installed. The project dependencies are listed in `requirements.txt`.
 
 ## Installation & Setup
 
 1. **Install Dependencies**:
    ```bash
-   pip install django pandas pdfplumber python-docx joblib openpyxl
+   pip install -r requirements.txt
    ```
 
 2. **Database Migrations**:
