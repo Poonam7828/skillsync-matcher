@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8 reveal">
+            <h2 class="fw-bold mb-4 d-flex align-items-center gap-3">
+                <span class="rounded-circle p-2" style="width: 48px; height: 48px; display: inline-flex; align-items: center; justify-content: center; font-size: 1.2rem; background: rgba(99, 102, 241, 0.1); border: 1px solid var(--primary-color);">👤</span>
+                {{ candidate.name }}
+            </h2>
+            
+            <div class="glass-card-premium neon-blue mb-5 reveal delay-1 p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="fw-bold m-0">Rule-Based Analysis</h4>
+                    <span class="badge rounded-pill bg-dark border border-secondary fw-normal small px-3">Recursive Analysis</span>
+                </div>
+                
+                {% for match in matches %}
+                <div class="mb-4 p-3 rounded" style="background: rgba(30, 41, 59, 0.3); border: 1px solid rgba(255,255,255,0.03);">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <h5 class="fw-bold m-0" style="font-size: 1.1rem;">{{ match.role.name }}</h5>
+                            <div class="fit-badge mt-1 {% if match.fit_category == 'Strong Fit' %}fit-strong{% elif match.fit_category == 'Moderate Fit' %}fit-moderate{% else %}fit-low{% endif %}">
+                                {{ match.fit_category }}
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <span class="fw-bold h5 mb-0" style="color: var(--primary-color);">{{ match.match_percentage }}%</span>
+                            <button class="btn btn-sm btn-outline-light ms-3 rounded-pill px-3 py-1" 
+                                    type="button" 
+                                    data-bs-toggle="collapse" 
+                                    data-bs-target="#skillCollapse{{ forloop.counter }}" 
+                                    aria-expanded="false" 
+                                    style="font-size: 0.75rem; border: 1px solid rgba(255,255,255,0.1);">
+                                Analyze Skills ▾
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="neon-progress-container" style="height: 6px; margin-top: 8px;">
+                        <div class="neon-progress-fill" style="width: {{ match.match_percentage }}%; --card-color: {% if match.match_percentage > 70 %}#10b981{% else %}#ef4444{% endif %};"></div>
+                    </div>
+
+                    <!-- Collapsible Skill Window -->
+                    <div class="collapse" id="skillCollapse{{ forloop.counter }}">
+                        <div class="mt-4 p-3 rounded" style="background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255,255,255,0.05);">
+                            <div class="row">
+                                <div class="col-12">
+                                    <h6 class="text-uppercase small fw-bold text-muted mb-3 tracking-wider" style="font-size: 0.7rem;">Requirement Status</h6>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        {% for skill in match.matched_skills %}
+                                        <span class="skill-chip chip-match">{{ skill }}</span>
+                                        {% endfor %}
+                                        
+                                        {% for skill in match.missing_skills %}
+                                        <span class="skill-chip chip-missing">{{ skill }}</span>
+                                        {% endfor %}
+                                        
+                                        {% if not match.matched_skills and not match.missing_skills %}
+                                        <span class="text-muted small italic">No specific skills found in database for this role.</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-muted">No internship roles found in database.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4 mt-4 mt-lg-0 reveal delay-1">
+            <div class="glass-card-premium neon-purple mb-5 p-4">
+                <h4 class="fw-bold mb-4 text-secondary d-flex align-items-center gap-2">
+                    <span>🤖</span> AI Predictions
+                </h4>
+                {% if prediction %}
+                <div class="mb-5 p-3 rounded" style="background: rgba(168, 85, 247, 0.05); border-left: 4px solid var(--secondary-color);">
+                    <label class="text-muted d-block mb-1 uppercase small fw-bold tracking-wider">Top Best-Fit Role</label>
+                    <h3 class="h4 fw-bold text-light mb-2">{{ prediction.top_role_1 }}</h3>
+                    <div class="prediction-score text-secondary">{{ prediction.score_1 }}% <span class="small fw-normal text-muted">Confidence</span></div>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="text-muted d-block mb-3 uppercase small fw-bold tracking-wider">Alternative Recommendations</label>
+                    <div class="d-flex justify-content-between align-items-center mb-3 p-2 rounded hover-dim">
+                        <h5 class="h6 fw-bold mb-0">{{ prediction.top_role_2 }}</h5>
+                        <div class="text-secondary fw-bold small">{{ prediction.score_2 }}%</div>
+                    </div>
+                </div>
+                {% else %}
+                <p class="text-muted">Analysis pending hybrid AI verification.</p>
+                {% endif %}
+            </div>
+
+            <div class="glass-card-premium neon-pink reveal delay-3 p-4">
+                <h4 class="fw-bold mb-3">Resources</h4>
+                <p class="text-muted small mb-4">View original resume data.</p>
+                <a href="{{ candidate.resume_file.url }}" class="btn btn-outline-secondary w-100 py-3 rounded-pill border-secondary hover-neon-pink mb-3" target="_blank">
+                    📄 View Original File
+                </a>
+                <button class="btn btn-outline-light w-100 py-2 rounded-pill border-secondary small" type="button" data-bs-toggle="collapse" data-bs-target="#rawText">
+                    Toggle Raw Text
+                </button>
+            </div>
+        </div>
+
+        <!-- Raw Text Collapse -->
+        <div class="col-12 mt-4 collapse" id="rawText">
+            <div class="glass-card-premium neon-cyan p-4">
+                <h4 class="fw-bold mb-4 text-cyan">Extracted Raw Text</h4>
+                <pre class="p-3 rounded text-muted" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); max-height: 300px; overflow-y: auto; font-size: 0.8rem; white-space: pre-wrap;">{{ candidate.extracted_text }}</pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .skill-chip {
+        padding: 5px 14px;
+        border-radius: 99px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: capitalize;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .skill-chip::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+    }
+    .chip-match {
+        background: #10b981;
+        color: #fff;
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+    .chip-match::before { background: #fff; box-shadow: 0 0 5px #fff; }
+    
+    .chip-missing {
+        background: #ef4444;
+        color: #fff;
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+    .chip-missing::before { background: #fff; box-shadow: 0 0 5px #fff; }
+
+    .fit-badge {
+        display: inline-block;
+        font-size: 0.65rem;
+        padding: 2px 8px;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 700;
+    }
+    .fit-strong { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+    .fit-moderate { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); }
+    .fit-low { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+
+    .hover-dim:hover { background: rgba(255,255,255,0.03); }
+    .hover-neon-pink:hover {
+        background: var(--accent-color) !important;
+        border-color: var(--accent-color) !important;
+        box-shadow: 0 0 15px var(--accent-color);
+        color: white !important;
+    }
+    
+    .collapse { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+</style>
+{% endblock %}

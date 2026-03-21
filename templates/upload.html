@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 reveal">
+            <div class="glass-card-premium neon-blue p-5 text-center">
+                <div class="mb-4">
+                    <span class="fs-1">🚀</span>
+                    <h2 class="fw-bold mt-3">Smart Resume Upload</h2>
+                    <p class="text-muted">Analyze candidates using official Role-Skill Matrix & Artificial Intelligence.
+                    </p>
+                </div>
+
+                <form method="POST" enctype="multipart/form-data" class="text-start">
+                    {% csrf_token %}
+                    <div class="mb-5">
+                        <div class="upload-zone p-4 rounded-4 border-dashed text-center"
+                            style="border: 2px dashed rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); cursor: pointer;"
+                            onclick="document.getElementById('resume_upload').click()">
+                            <div class="fs-2 mb-2">📁</div>
+                            <p class="mb-0 text-muted small">Click or Drag PDF/DOCX here</p>
+                            <div class="mt-2 text-primary small fw-bold">Select File</div>
+                            <div style="display:none">{{ form.resume_file }}</div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-premium w-100 py-3">Start Intelligent Analysis</button>
+                    <p class="text-muted small mt-4 text-center">Name, Skills, and Recommendations extracted
+                        automatically.</p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Show filename when selected
+    document.getElementById('resume_upload').onchange = function () {
+        if (this.files[0]) {
+            document.querySelector('.upload-zone p').innerText = this.files[0].name;
+            document.querySelector('.upload-zone .text-primary').innerText = "File Selected ✓";
+        }
+    };
+</script>
+{% endblock %}

@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Hero Section -->
+    <div class="row align-items-center mb-5 pb-5 mt-4">
+        <div class="col-lg-7 text-start">
+            <h1 class="hero-text mb-4 reveal">Next-Gen Resume <br><span
+                    style="background: linear-gradient(135deg, #00d2ff, #9d50bb); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Intelligence</span>
+            </h1>
+            <p class="lead text-muted mb-5 reveal delay-1" style="font-size: 1.35rem; line-height: 1.8;">
+                Graphura's advanced engine uses hybrid AI to bridge the gap between talented interns and their ideal
+                roles. Fast. Objective. Scalable.
+            </p>
+            <div class="d-flex justify-content-start gap-4 reveal delay-2">
+                <a href="{% url 'upload_resume' %}" class="btn btn-premium shadow-lg">Upload Resume</a>
+                <a href="{% url 'dashboard' %}"
+                    class="btn btn-outline-light btn-lg rounded-pill px-5 border-secondary">Live Dashboard</a>
+            </div>
+        </div>
+
+        <div class="col-lg-5 d-none d-lg-block reveal delay-2">
+            <div class="neon-grid">
+                <div class="neon-card neon-blue">
+                    <div class="neon-card-inner">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold"
+                                style="width: 35px; height: 35px; background: rgba(99, 102, 241, 0.2); color: #6366f1; border: 1px solid #6366f1;">
+                                AS</div>
+                            <div>
+                                <h6 class="fw-bold mb-0" style="font-size: 0.9rem;">Abhishek S.</h6>
+                                <span class="text-muted" style="font-size: 0.7rem;">Web Dev Intern</span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between small mb-1">
+                            <span class="text-muted">Match Score</span>
+                            <span style="color: #6366f1; font-weight: bold;">92%</span>
+                        </div>
+                        <div class="neon-progress-container">
+                            <div class="neon-progress-fill" style="width: 92%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="neon-card neon-purple">
+                    <div class="neon-card-inner">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold"
+                                style="width: 35px; height: 35px; background: rgba(168, 85, 247, 0.2); color: #a855f7; border: 1px solid #a855f7;">
+                                PK</div>
+                            <div>
+                                <h6 class="fw-bold mb-0" style="font-size: 0.9rem;">Priya K.</h6>
+                                <span class="text-muted" style="font-size: 0.7rem;">Data Analytics</span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between small mb-1">
+                            <span class="text-muted">Match Score</span>
+                            <span style="color: #a855f7; font-weight: bold;">85%</span>
+                        </div>
+                        <div class="neon-progress-container">
+                            <div class="neon-progress-fill" style="width: 85%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="neon-card neon-pink">
+                    <div class="neon-card-inner">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold"
+                                style="width: 35px; height: 35px; background: rgba(236, 72, 153, 0.2); color: #ec4899; border: 1px solid #ec4899;">
+                                RR</div>
+                            <div>
+                                <h6 class="fw-bold mb-0" style="font-size: 0.9rem;">Rohan R.</h6>
+                                <span class="text-muted" style="font-size: 0.7rem;">Graphic Design</span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between small mb-1">
+                            <span class="text-muted">Match Score</span>
+                            <span style="color: #ec4899; font-weight: bold;">78%</span>
+                        </div>
+                        <div class="neon-progress-container">
+                            <div class="neon-progress-fill" style="width: 78%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="neon-card neon-cyan">
+                    <div class="neon-card-inner">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold"
+                                style="width: 35px; height: 35px; background: rgba(14, 165, 233, 0.2); color: #0ea5e9; border: 1px solid #0ea5e9;">
+                                NM</div>
+                            <div>
+                                <h6 class="fw-bold mb-0" style="font-size: 0.9rem;">Neha M.</h6>
+                                <span class="text-muted" style="font-size: 0.7rem;">Digital Mktg</span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between small mb-1">
+                            <span class="text-muted">Match Score</span>
+                            <span style="color: #0ea5e9; font-weight: bold;">88%</span>
+                        </div>
+                        <div class="neon-progress-container">
+                            <div class="neon-progress-fill" style="width: 88%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Section with Breathing Logic -->
+    <div class="row pb-5 reveal delay-3" style="margin-top: 10rem;">
+        <div class="col-md-4 mb-4">
+            <div class="neon-card neon-blue neon-breathing">
+                <div class="neon-card-inner text-center py-4">
+                    <h1 class="fw-bold text-primary mb-1">500+</h1>
+                    <p class="text-muted mb-0 uppercase small fw-bold">Success Analysis</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="neon-card neon-purple neon-breathing">
+                <div class="neon-card-inner text-center py-4">
+                    <h1 class="fw-bold text-secondary mb-1">12</h1>
+                    <p class="text-muted mb-0 uppercase small fw-bold">Strategic Roles</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="neon-card neon-pink neon-breathing">
+                <div class="neon-card-inner text-center py-4">
+                    <h1 class="fw-bold text-accent mb-1">98%</h1>
+                    <p class="text-muted mb-0 uppercase small fw-bold">Precision Rate</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Why Choose Section (New Content) -->
+    <div class="text-center mb-5 mt-5 pt-5 reveal delay-3">
+        <h2 class="fw-bold h1">Why Choose Graphura Matcher?</h2>
+        <p class="text-muted mx-auto" style="max-width: 600px;">Our engine combines cutting-edge AI with human-centric
+            design to redefine professional matching.</p>
+    </div>
+
+    <div class="row pb-5 reveal delay-3">
+        <div class="col-md-3 mb-4">
+            <div class="feature-card h-100 text-center">
+                <div class="mb-3 fs-1 text-primary">⚡</div>
+                <h5 class="fw-bold">Lightning Fast</h5>
+                <p class="text-muted small mb-0">Analysis completed in under 2 seconds per resume.</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="feature-card h-100 text-center">
+                <div class="mb-3 fs-1 text-secondary">🧠</div>
+                <h5 class="fw-bold">Hybrid AI</h5>
+                <p class="text-muted small mb-0">Machine learning models paired with rule-based logic.</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="feature-card h-100 text-center">
+                <div class="mb-3 fs-1 text-accent">📊</div>
+                <h5 class="fw-bold">Detailed Reports</h5>
+                <p class="text-muted small mb-0">Get granular breakdown of skill matching scores.</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="feature-card h-100 text-center">
+                <div class="mb-3 fs-1 text-info">🔒</div>
+                <h5 class="fw-bold">Secure Processing</h5>
+                <p class="text-muted small mb-0">Your data is encrypted and processed with privacy.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Heading -->
+    <div class="text-center mb-5 mt-5 reveal delay-3">
+        <h2 class="fw-bold h1">How it Works</h2>
+        <div class="mx-auto bg-primary" style="width: 60px; height: 4px; border-radius: 2px;"></div>
+    </div>
+
+    <div class="row pt-4 reveal delay-3 position-relative">
+        <div class="col-md-4 mb-4">
+            <div class="neon-card neon-blue step-card cycle-1 h-100">
+                <div class="neon-card-inner p-4">
+                    <div class="step-indicator-dot"></div>
+                    <div class="h5 fw-bold mb-3 d-flex align-items-center gap-3">
+                        <span class="step-number d-inline-flex align-items-center justify-content-center rounded-circle"
+                            style="width: 32px; height: 32px; background: rgba(255,255,255,0.05); color: var(--text-muted); transition: all 0.5s;">1</span>
+                        Extraction
+                    </div>
+                    <p class="text-muted">Upload any PDF or DOCX. Our engine instantly extracts unstructured data into
+                        high-quality feature vectors.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="neon-card neon-purple step-card cycle-2 h-100">
+                <div class="neon-card-inner p-4">
+                    <div class="step-indicator-dot"></div>
+                    <div class="h5 fw-bold mb-3 d-flex align-items-center gap-3">
+                        <span class="step-number d-inline-flex align-items-center justify-content-center rounded-circle"
+                            style="width: 32px; height: 32px; background: rgba(255,255,255,0.05); color: var(--text-muted); transition: all 0.5s;">2</span>
+                        Hybrid Matching
+                    </div>
+                    <p class="text-muted">Combining rule-based precision with ML-driven semantic understanding to find
+                        the absolute best fit.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="neon-card neon-pink step-card cycle-3 h-100">
+                <div class="neon-card-inner p-4">
+                    <div class="step-indicator-dot"></div>
+                    <div class="h5 fw-bold mb-3 d-flex align-items-center gap-3">
+                        <span class="step-number d-inline-flex align-items-center justify-content-center rounded-circle"
+                            style="width: 32px; height: 32px; background: rgba(255,255,255,0.05); color: var(--text-muted); transition: all 0.5s;">3</span>
+                        Insight Dashboard
+                    </div>
+                    <p class="text-muted">Visualize top-3 recommendations, fit scores, and candidate profiles in a
+                        beautiful, actionable dashboard.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

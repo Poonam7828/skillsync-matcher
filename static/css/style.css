@@ -1,0 +1,295 @@
+:root {
+    --primary-color: #6366f1;
+    --secondary-color: #a855f7;
+    --accent-color: #ec4899;
+    --bg-dark: #020617;
+    --card-bg: rgba(15, 23, 42, 0.6);
+    --text-main: #f8fafc;
+    --text-muted: #cbd5e1;
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --neon-blue: #00d2ff;
+    --neon-purple: #9d50bb;
+}
+
+body {
+    background: #020617;
+    color: var(--text-main);
+    font-family: 'Outfit', sans-serif;
+    margin: 0;
+    overflow-x: hidden;
+    min-height: 100vh;
+    position: relative;
+}
+
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+/* Background Blobs */
+.bg-blob {
+    position: fixed;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(99, 102, 241, 0) 70%);
+    border-radius: 50%;
+    z-index: -1;
+    filter: blur(80px);
+    animation: blob-float 20s infinite alternate;
+}
+
+.blob-1 { top: -10%; right: -10%; background: radial-gradient(circle, rgba(168, 85, 247, 0.2) 0%, rgba(168, 85, 247, 0) 70%); }
+.blob-2 { bottom: -10%; left: -10%; background: radial-gradient(circle, rgba(236, 72, 153, 0.15) 0%, rgba(236, 72, 153, 0) 70%); }
+
+@keyframes blob-float {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(50px, 50px) scale(1.1); }
+}
+
+/* Neon Animated Border Cards - Base */
+.neon-card {
+    position: relative;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 1.25rem;
+    overflow: hidden;
+    padding: 2px;
+    transition: all 0.5s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Professional Glass Card for Functional Pages */
+.glass-card-premium {
+    background: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: 1.25rem;
+    padding: 2.5rem;
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.glass-card-premium:hover {
+    border-color: var(--card-color, var(--primary-color));
+    box-shadow: 0 0 30px rgba(99, 102, 241, 0.15);
+    transform: translateY(-5px);
+}
+
+.neon-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+        transparent, 
+        var(--card-color, #6366f1), 
+        transparent, 
+        var(--card-color, #6366f1), 
+        transparent
+    );
+    animation: rotate-border 4s linear infinite;
+}
+
+@keyframes rotate-border {
+    100% { transform: rotate(360deg); }
+}
+
+.neon-card-inner {
+    position: relative;
+    background: #020617;
+    border-radius: 1.15rem;
+    padding: 1.5rem;
+    height: 100%;
+    z-index: 1;
+}
+
+/* Breathing Neon (No rotation, just pulse) */
+.neon-breathing { animation: neon-breath 3s infinite alternate ease-in-out; }
+.neon-breathing::before { display: none; }
+.neon-breathing { border: 1px solid var(--card-color); }
+
+@keyframes neon-breath {
+    from { box-shadow: 0 0 10px rgba(255,255,255,0.05); }
+    to { box-shadow: 0 0 25px var(--card-color); border-color: white; }
+}
+
+/* Specific Card Colors */
+.neon-blue { --card-color: #6366f1; }
+.neon-purple { --card-color: #a855f7; }
+.neon-pink { --card-color: #ec4899; }
+.neon-cyan { --card-color: #0ea5e9; }
+
+/* Hero Neon Grid */
+.neon-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+}
+
+.neon-grid .neon-card:nth-child(even) { transform: translateY(40px); }
+.neon-grid .neon-card:hover { transform: translateY(-5px) scale(1.05); z-index: 10; }
+.neon-grid .neon-card:nth-child(even):hover { transform: translateY(30px) scale(1.05); }
+
+/* Step Sequencing Logic */
+.step-indicator-dot {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    width: 10px;
+    height: 10px;
+    background: var(--card-color);
+    border-radius: 50%;
+    opacity: 0;
+    box-shadow: 0 0 15px var(--card-color);
+}
+
+.cycle-1 { animation: step-pulse 6s infinite 0s; }
+.cycle-2 { animation: step-pulse 6s infinite 2s; }
+.cycle-3 { animation: step-pulse 6s infinite 4s; }
+
+/* Active Neon Border Logic for Steps */
+.step-card::before { opacity: 0; transition: opacity 0.5s; }
+
+.cycle-1::before { animation: rotate-border 4s linear infinite, neon-reveal 6s infinite 0s; }
+.cycle-2::before { animation: rotate-border 4s linear infinite, neon-reveal 6s infinite 2s; }
+.cycle-3::before { animation: rotate-border 4s linear infinite, neon-reveal 6s infinite 4s; }
+
+@keyframes neon-reveal {
+    0%, 33.3% { opacity: 1; }
+    33.4%, 100% { opacity: 0; }
+}
+
+@keyframes step-pulse {
+    0%, 33.3% {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        border-color: var(--card-color);
+    }
+    33.4%, 100% {
+        transform: translateY(0) scale(1);
+    }
+}
+
+.cycle-1 .step-indicator-dot, .cycle-1 .step-number { animation: highlight-seq 6s infinite 0s; }
+.cycle-2 .step-indicator-dot, .cycle-2 .step-number { animation: highlight-seq 6s infinite 2s; }
+.cycle-3 .step-indicator-dot, .cycle-3 .step-number { animation: highlight-seq 6s infinite 4s; }
+
+@keyframes highlight-seq {
+    0%, 33.3% {
+        opacity: 1;
+        background-color: var(--card-color) !important;
+        color: white !important;
+        box-shadow: 0 0 20px var(--card-color);
+    }
+    33.4%, 100% {
+        opacity: 0.15;
+        background-color: rgba(255,255,255,0.05) !important;
+        color: var(--text-muted) !important;
+        box-shadow: none;
+    }
+}
+
+/* Feature Cards */
+.feature-card {
+    background: rgba(30, 41, 59, 0.2);
+    border: 1px solid var(--glass-border);
+    border-radius: 1rem;
+    padding: 2rem;
+    transition: all 0.4s ease;
+}
+.feature-card:hover {
+    background: rgba(99, 102, 241, 0.05);
+    border-color: var(--primary-color);
+    transform: translateY(-5px);
+}
+
+/* Common UI Elements */
+.neon-progress-container {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    margin-top: 1.25rem;
+    overflow: hidden;
+}
+
+.neon-progress-fill {
+    height: 100%;
+    background: var(--card-color);
+    box-shadow: 0 0 15px var(--card-color);
+    border-radius: 3px;
+}
+
+.nav-glass {
+    background: rgba(2, 6, 23, 0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--glass-border);
+    padding: 1rem 0;
+    z-index: 1000;
+}
+
+.hero-text {
+    font-size: 4.5rem;
+    font-weight: 900;
+    letter-spacing: -0.05em;
+    background: linear-gradient(135deg, #fff 0%, #a5b4fc 50%, #818cf8 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: float 8s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+}
+
+.reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: reveal 0.8s forwards;
+}
+
+@keyframes reveal {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.delay-1 { animation-delay: 0.2s; }
+.delay-2 { animation-delay: 0.4s; }
+.delay-3 { animation-delay: 0.6s; }
+
+.btn-premium {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border: none;
+    color: white;
+    padding: 1rem 2.5rem;
+    border-radius: 9999px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.4);
+}
+
+.btn-premium:hover {
+    transform: scale(1.05);
+    box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.5);
+    color: white;
+}
+
+.fit-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+.fit-strong { background: #059669; color: #ecfdf5; }
+.fit-moderate { background: #d97706; color: #fffbeb; }
+.fit-low { background: #dc2626; color: #fef2f2; }
+
+.prediction-score {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
