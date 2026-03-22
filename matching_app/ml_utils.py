@@ -24,6 +24,22 @@ def extract_text_from_file(file_path):
         text = "\n".join([para.text for para in doc.paragraphs])
     return text
 
+def get_page_count(file):
+    """Counts pages in a PDF or DOCX file."""
+    try:
+        if file.name.endswith(".pdf"):
+            with pdfplumber.open(file) as pdf:
+                return len(pdf.pages)
+        elif file.name.endswith(".docx"):
+            # DOCX heuristic: 500 words ~ 1 page
+            doc = docx.Document(file)
+            text = "\n".join([para.text for para in doc.paragraphs])
+            word_count = len(text.split())
+            return (word_count // 500) + 1
+        return 0
+    except Exception:
+        return 0
+
 def extract_candidate_name(text, filename):
     """Extracts candidate name from the top of the resume text or falls back to filename."""
     lines = text.split("\n")
@@ -31,10 +47,8 @@ def extract_candidate_name(text, filename):
 
     for line in lines[:10]:
         line = line.strip()
-        # Logic: Name is likely in the first 10 lines, 3-40 chars, no common keywords
         if len(line) > 3 and len(line) < 40:
             if not any(word in line.lower() for word in ["resume", "cv", "email", "phone", "contact", "experience", "education"]):
-                # Ensure it's not JUST numbers or special chars
                 if any(c.isalpha() for c in line):
                     candidate_name = line
                     break
@@ -46,12 +60,10 @@ def extract_candidate_name(text, filename):
 
 def get_rule_based_matches(skills_text, roles_queryset):
     """Calculates rule-based matching for a given set of skills."""
-    # Normalize candidate skills
     candidate_skills = [s.strip().lower() for s in skills_text.replace('\n', ',').replace('/', ',').split(",") if s.strip()]
     results = []
     
     for role in roles_queryset:
-        # Get required skills for the role
         role_skills = [s.strip().lower() for s in role.required_skills.split(",") if s.strip()]
         if not role_skills:
             continue
@@ -86,37 +98,25 @@ def get_rule_based_matches(skills_text, roles_queryset):
 def get_ml_predictions(extracted_text):
     """Predicts top 3 roles using the trained ML model with one-hot encoding."""
     try:
-        # Check if files exist
         if not all(os.path.exists(p) for p in [MODEL_PATH, FEATURES_PATH, ENCODER_PATH]):
-            print("ML Model files not found in models directory.")
             return []
 
-        # Load Model (Using joblib for compatibility with notebook)
         model = joblib.load(MODEL_PATH)
-        
-        # Load Feature List (Skills used in training)
         with open(FEATURES_PATH, 'rb') as f:
             skills_tools = pickle.load(f)
-            
-        # Load Encoder Classes
         with open(ENCODER_PATH, 'rb') as f:
             roles = pickle.load(f)
 
-        # Preprocess input text: normalize and extract potential skills
         candidate_skills = [s.strip().lower() for s in extracted_text.replace('\n', ',').replace('/', ',').split(",") if s.strip()]
         
-        # Create feature vector (One-Hot Encoding)
         X_vec = []
         for skill in skills_tools:
             X_vec.append(1 if skill.lower() in candidate_skills else 0)
             
-        # Inference
         prob_matrix = model.predict_proba([X_vec])
-        
         probs = prob_matrix[0]
         role_scores = list(zip(roles, probs * 100))
         role_scores.sort(key=lambda x: x[1], reverse=True)
-        
         top3 = role_scores[:3]
         return top3
     except Exception as e:

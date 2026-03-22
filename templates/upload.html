@@ -4,42 +4,200 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-6 reveal">
-            <div class="glass-card-premium neon-blue p-5 text-center">
-                <div class="mb-4">
-                    <span class="fs-1">🚀</span>
-                    <h2 class="fw-bold mt-3">Smart Resume Upload</h2>
-                    <p class="text-muted">Analyze candidates using official Role-Skill Matrix & Artificial Intelligence.
-                    </p>
+            <div class="glass-card-premium neon-blue p-5 text-center position-relative overflow-hidden">
+                <!-- Loading Overlay -->
+                <div id="loadingOverlay" class="loading-overlay d-none">
+                    <div class="spinner-container">
+                        <div class="dna-spinner"></div>
+                        <h4 class="mt-4 fw-bold text-gradient">Analyzing Resume...</h4>
+                        <p class="text-muted small">Extracting skills and calculating role matches.</p>
+                    </div>
                 </div>
 
-                <form method="POST" enctype="multipart/form-data" class="text-start">
-                    {% csrf_token %}
-                    <div class="mb-5">
-                        <div class="upload-zone p-4 rounded-4 border-dashed text-center"
-                            style="border: 2px dashed rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); cursor: pointer;"
-                            onclick="document.getElementById('resume_upload').click()">
-                            <div class="fs-2 mb-2">📁</div>
-                            <p class="mb-0 text-muted small">Click or Drag PDF/DOCX here</p>
-                            <div class="mt-2 text-primary small fw-bold">Select File</div>
-                            <div style="display:none">{{ form.resume_file }}</div>
-                        </div>
+                <div id="uploadContent">
+                    <div class="mb-4">
+                        <span class="fs-1">🚀</span>
+                        <h2 class="fw-bold mt-3">Smart Resume Upload</h2>
+                        <p class="text-muted">Analyze candidates against the official Role-Skill Matrix.</p>
                     </div>
-                    <button type="submit" class="btn btn-premium w-100 py-3">Start Intelligent Analysis</button>
-                    <p class="text-muted small mt-4 text-center">Name, Skills, and Recommendations extracted
-                        automatically.</p>
-                </form>
+                    
+                    <form method="POST" enctype="multipart/form-data" class="text-start" id="uploadForm">
+                        {% csrf_token %}
+
+                        {% if form.resume_file.errors %}
+                        <div id="errorAlert" class="alert alert-danger bg-dark text-danger border-danger small mb-4">
+                            {% for error in form.resume_file.errors %}
+                            <div>• {{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <div class="mb-5">
+                            <div class="upload-zone p-4 rounded-4 border-dashed text-center" 
+                                id="dropZone"
+                                style="border: 2px dashed rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); cursor: pointer; transition: 0.3s;"
+                                onclick="document.getElementById('resume_upload').click()">
+                                <div class="fs-2 mb-2" id="uploadIcon" style="pointer-events: none;">📁</div>
+                                <p class="mb-0 text-muted small" id="uploadText" style="pointer-events: none;">Click or Drag PDF/DOCX here</p>
+                                <div class="mt-2 text-primary small fw-bold" id="statusText" style="pointer-events: none;">Constraints: Max 2 Pages</div>
+                                <div style="display:none">{{ form.resume_file }}</div>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" id="analyzeBtn" class="btn btn-premium w-100 py-3 opacity-50" disabled>
+                            Start Intelligent Analysis
+                        </button>
+                        <p class="text-muted small mt-4 text-center">System restricted to PDF/DOCX (Max 2 pages).</p>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    // Show filename when selected
-    document.getElementById('resume_upload').onchange = function () {
-        if (this.files[0]) {
-            document.querySelector('.upload-zone p').innerText = this.files[0].name;
-            document.querySelector('.upload-zone .text-primary').innerText = "File Selected ✓";
-        }
+    const fileInput = document.getElementById('resume_upload');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const uploadText = document.getElementById('uploadText');
+    const statusText = document.getElementById('statusText');
+    const uploadIcon = document.getElementById('uploadIcon');
+    const errorAlert = document.getElementById('errorAlert');
+    const uploadForm = document.getElementById('uploadForm');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const uploadContent = document.getElementById('uploadContent');
+    const dropZone = document.getElementById('dropZone');
+
+    // Handle File Selection
+    fileInput.onchange = function() {
+        handleFiles(this.files);
     };
+
+    // GLOBAL PREVENT DEFAULT (Stops browser from opening files in new tab)
+    window.addEventListener("dragover", function(e) {
+        e.preventDefault();
+    }, false);
+    window.addEventListener("drop", function(e) {
+        e.preventDefault();
+    }, false);
+
+    // DROP ZONE SPECIFIC LOGIC
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropZone.style.borderColor = 'var(--primary-color)';
+            dropZone.style.background = 'rgba(99, 102, 241, 0.1)';
+        }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropZone.style.borderColor = 'rgba(255,255,255,0.1)';
+            dropZone.style.background = 'rgba(0,0,0,0.2)';
+        }, false);
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            // Using DataTransfer to manually set the files list
+            const dt = new DataTransfer();
+            dt.items.add(files[0]);
+            fileInput.files = dt.files;
+            handleFiles(dt.files);
+        }
+    }, false);
+
+    function handleFiles(files) {
+        if (errorAlert) errorAlert.style.display = 'none';
+
+        if(files && files.length > 0) {
+            const fileName = files[0].name;
+            const extension = fileName.split('.').pop().toLowerCase();
+            
+            if(['pdf', 'docx'].includes(extension)) {
+                uploadText.innerText = fileName;
+                statusText.innerText = "File Selected ✓";
+                statusText.classList.replace('text-primary', 'text-success');
+                uploadIcon.innerText = "📄";
+                
+                // Enable button
+                analyzeBtn.disabled = false;
+                analyzeBtn.classList.remove('opacity-50');
+                analyzeBtn.classList.add('pulse-glow');
+            } else {
+                alert("Only PDF and DOCX files are allowed!");
+                fileInput.value = ''; // Reset
+                resetUI();
+            }
+        } else {
+            resetUI();
+        }
+    }
+
+    uploadForm.onsubmit = function() {
+        loadingOverlay.classList.remove('d-none');
+        uploadContent.classList.add('opacity-0');
+        analyzeBtn.disabled = true;
+        return true; 
+    };
+
+    function resetUI() {
+        uploadText.innerText = "Click or Drag PDF/DOCX here";
+        statusText.innerText = "Constraints: Max 2 Pages";
+        statusText.classList.replace('text-success', 'text-primary');
+        uploadIcon.innerText = "📁";
+        analyzeBtn.disabled = true;
+        analyzeBtn.classList.add('opacity-50');
+        analyzeBtn.classList.remove('pulse-glow');
+    }
 </script>
+
+<style>
+    .loading-overlay {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(10px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+        animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .dna-spinner {
+        width: 60px;
+        height: 60px;
+        border: 4px solid transparent;
+        border-top-color: var(--primary-color);
+        border-bottom-color: var(--secondary-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+    }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+    .pulse-glow {
+        animation: pulse-glow 2s infinite;
+    }
+    @keyframes pulse-glow {
+        0% { box-shadow: 0 0 5px var(--primary-color); }
+        50% { box-shadow: 0 0 20px var(--primary-color); }
+        100% { box-shadow: 0 0 5px var(--primary-color); }
+    }
+    .border-dashed:hover {
+        border-color: var(--primary-color) !important;
+        background: rgba(99, 102, 241, 0.05) !important;
+    }
+    .text-gradient {
+        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .opacity-0 { opacity: 0; pointer-events: none; transition: 0.3s; }
+</style>
 {% endblock %}

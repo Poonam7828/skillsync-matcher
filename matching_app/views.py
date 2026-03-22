@@ -37,8 +37,6 @@ def upload_resume(request):
         form = ResumeUploadForm(request.POST, request.FILES)
         if form.is_valid():
             candidate = form.save(commit=False)
-            
-            # Save initially to get file path
             candidate.save()
             
             # Process Resume
@@ -83,7 +81,6 @@ def upload_resume(request):
 def candidate_detail(request, pk):
     candidate = get_object_or_404(Candidate, pk=pk)
     roles = Role.objects.all()
-    # Re-calculate to get skill lists for display
     detailed_matches = get_rule_based_matches(candidate.extracted_text, roles)
     detailed_matches.sort(key=lambda x: x['match_percentage'], reverse=True)
     
@@ -94,6 +91,15 @@ def candidate_detail(request, pk):
         'matches': detailed_matches,
         'prediction': prediction
     })
+
+def rename_candidate(request, pk):
+    if request.method == 'POST':
+        candidate = get_object_or_404(Candidate, pk=pk)
+        new_name = request.POST.get('name')
+        if new_name:
+            candidate.name = new_name
+            candidate.save()
+    return redirect('candidate_detail', pk=pk)
 
 def delete_candidate(request, pk):
     candidate = get_object_or_404(Candidate, pk=pk)

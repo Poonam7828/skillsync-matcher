@@ -5,10 +5,26 @@
     <div class="row">
         <!-- Main Content -->
         <div class="col-lg-8 reveal">
-            <h2 class="fw-bold mb-4 d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center gap-3 mb-4">
                 <span class="rounded-circle p-2" style="width: 48px; height: 48px; display: inline-flex; align-items: center; justify-content: center; font-size: 1.2rem; background: rgba(99, 102, 241, 0.1); border: 1px solid var(--primary-color);">👤</span>
-                {{ candidate.name }}
-            </h2>
+                <div id="nameDisplayContainer" class="d-flex align-items-center gap-3">
+                    <h2 class="fw-bold m-0" id="candidateName">{{ candidate.name }}</h2>
+                    <button class="btn btn-sm btn-outline-secondary rounded-circle p-1 border-0 hover-neon-purple" 
+                            onclick="toggleEditName()" 
+                            title="Edit Name"
+                            style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                        <span style="font-size: 0.9rem;">✏️</span>
+                    </button>
+                </div>
+                
+                <!-- Hidden Edit Form -->
+                <form id="editNameForm" action="{% url 'rename_candidate' candidate.pk %}" method="POST" class="d-none align-items-center gap-2">
+                    {% csrf_token %}
+                    <input type="text" name="name" value="{{ candidate.name }}" class="form-control bg-dark text-light border-primary rounded-pill px-4" style="width: 300px;">
+                    <button type="submit" class="btn btn-primary btn-sm rounded-pill px-4 py-2 fw-bold">Save</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3 py-2" onclick="toggleEditName()">Cancel</button>
+                </form>
+            </div>
             
             <div class="glass-card-premium neon-blue mb-5 reveal delay-1 p-4">
                 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -17,7 +33,7 @@
                 </div>
                 
                 {% for match in matches %}
-                <div class="mb-4 p-3 rounded" style="background: rgba(30, 41, 59, 0.3); border: 1px solid rgba(255,255,255,0.03);">
+                <div class="mb-4 p-3 rounded" style="background: rgba(30, 41, 59, 0.3); border: 1px solid rgba(255,255,255,0.05);">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <div>
                             <h5 class="fw-bold m-0" style="font-size: 1.1rem;">{{ match.role.name }}</h5>
@@ -42,7 +58,6 @@
                         <div class="neon-progress-fill" style="width: {{ match.match_percentage }}%; --card-color: {% if match.match_percentage > 70 %}#10b981{% else %}#ef4444{% endif %};"></div>
                     </div>
 
-                    <!-- Collapsible Skill Window -->
                     <div class="collapse" id="skillCollapse{{ forloop.counter }}">
                         <div class="mt-4 p-3 rounded" style="background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255,255,255,0.05);">
                             <div class="row">
@@ -56,10 +71,6 @@
                                         {% for skill in match.missing_skills %}
                                         <span class="skill-chip chip-missing">{{ skill }}</span>
                                         {% endfor %}
-                                        
-                                        {% if not match.matched_skills and not match.missing_skills %}
-                                        <span class="text-muted small italic">No specific skills found in database for this role.</span>
-                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
@@ -119,6 +130,18 @@
     </div>
 </div>
 
+<script>
+    function toggleEditName() {
+        const display = document.getElementById('nameDisplayContainer');
+        const form = document.getElementById('editNameForm');
+        display.classList.toggle('d-none');
+        form.classList.toggle('d-none');
+        if (!form.classList.contains('d-none')) {
+            form.querySelector('input').focus();
+        }
+    }
+</script>
+
 <style>
     .skill-chip {
         padding: 5px 14px;
@@ -138,18 +161,10 @@
         height: 6px;
         border-radius: 50%;
     }
-    .chip-match {
-        background: #10b981;
-        color: #fff;
-        border: 1px solid rgba(255,255,255,0.1);
-    }
+    .chip-match { background: #10b981; color: #fff; border: 1px solid rgba(255,255,255,0.1); }
     .chip-match::before { background: #fff; box-shadow: 0 0 5px #fff; }
     
-    .chip-missing {
-        background: #ef4444;
-        color: #fff;
-        border: 1px solid rgba(255,255,255,0.1);
-    }
+    .chip-missing { background: #ef4444; color: #fff; border: 1px solid rgba(255,255,255,0.1); }
     .chip-missing::before { background: #fff; box-shadow: 0 0 5px #fff; }
 
     .fit-badge {
@@ -158,7 +173,6 @@
         padding: 2px 8px;
         border-radius: 4px;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
         font-weight: 700;
     }
     .fit-strong { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
@@ -166,12 +180,8 @@
     .fit-low { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
 
     .hover-dim:hover { background: rgba(255,255,255,0.03); }
-    .hover-neon-pink:hover {
-        background: var(--accent-color) !important;
-        border-color: var(--accent-color) !important;
-        box-shadow: 0 0 15px var(--accent-color);
-        color: white !important;
-    }
+    .hover-neon-pink:hover { background: #ec4899 !important; box-shadow: 0 0 15px #ec4899; color: white !important; }
+    .hover-neon-purple:hover { background: var(--secondary-color) !important; box-shadow: 0 0 10px var(--secondary-color); color: white !important; }
     
     .collapse { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
 </style>
