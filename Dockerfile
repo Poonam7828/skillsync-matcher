@@ -15,7 +15,7 @@ ENV PATH="/root/.cargo/bin:${PATH}"
 RUN pip install --upgrade pip
 
 # Install requirements
-RUN pip install -r requirements.txt
+RUN pip install -r requirements-prod.txt
 
 # Run Django
 CMD ["gunicorn", "matching_engine.wsgi", "--bind", "0.0.0.0:8000"]

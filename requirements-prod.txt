@@ -1,0 +1,10 @@
+Django
+gunicorn
+numpy
+pandas
+scikit-learn
+joblib
+nltk
+spacy
+pdfminer.six
+python-docx
